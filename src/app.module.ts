@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './modules/user/user.module';
+import { ModulesModule } from './modules/modules.module';
 import { ProvidersModule } from './providers/providers.module';
 
 @Module({
@@ -12,7 +12,7 @@ import { ProvidersModule } from './providers/providers.module';
       isGlobal: true,
       cache: true,
     }),
-    UserModule,
+    ModulesModule,
     ProvidersModule,
   ],
   controllers: [AppController],

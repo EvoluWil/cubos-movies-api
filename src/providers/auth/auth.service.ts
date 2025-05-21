@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { differenceInMinutes } from 'date-fns';
 import { User } from 'src/@types/user.type';
-import { FindUserDto } from 'src/modules/user/dto/find-user.dto';
+import { FindUserDto } from 'src/providers/auth/dto/find-user.dto';
 import { defaultPlainToClass } from 'src/utils/default-plain-to-class';
 import { generateCode } from 'src/utils/generate-code.util';
 import { generateHash } from 'src/utils/generate-hash.util';
