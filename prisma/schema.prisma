@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,4 +6,64 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  movies Movie[]
+
+  @@map("users")
+}
+
+model Movie {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  coverUrl    String
+  videoUrl    String
+  popularity  Int
+  votes       Int
+  rating      Int
+  budget      Int
+  revenue     Int
+
+  releaseAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  genreId String
+  genre   Genre  @relation(fields: [genreId], references: [id])
+
+  languageId String
+  language   Language @relation(fields: [languageId], references: [id])
+
+  @@map("movies")
+}
+
+model Genre {
+  id   String @id @default(uuid())
+  name String @unique
+
+  movies Movie[]
+
+  @@map("genres")
+}
+
+model Language {
+  id   String @id @default(uuid())
+  name String
+
+  movies Movie[]
+
+  @@map("languages")
 }
