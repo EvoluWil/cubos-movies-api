@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    container_name: cubos-movies-db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: cubos-movies-app
+    ports:
+      - '3333:3333'
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/movies
+      JWT_SECRET: D6E42303462491FC696EAC53C1B086A5034735A7
+      CLIENT_URL: http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npx prisma migrate deploy && yarn start:dev"
+
+volumes:
+  postgres_data:
