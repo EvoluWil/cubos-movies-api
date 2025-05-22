@@ -27,7 +27,7 @@ export class MailService {
   private readonly templates = {
     [MailTypeEnum.WELCOME]: (data) => newAccountTemplate(data.username),
     [MailTypeEnum.FORGOT_PASSWORD]: (data) =>
-      recoveryPasswordTemplate(data.username, data.token),
+      recoveryPasswordTemplate(data.username, data.code),
     [MailTypeEnum.DELETE_ACCOUNT]: (data) =>
       deleteAccountTemplate(data.username),
     [MailTypeEnum.MOVIE_AVAILABLE]: (data) =>

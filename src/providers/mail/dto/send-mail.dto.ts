@@ -28,7 +28,7 @@ export class SendMailDto {
   @ValidateIf((o) => o.type === MailTypeEnum.FORGOT_PASSWORD)
   @IsString()
   @IsNotEmpty()
-  token?: string;
+  code?: string;
 
   @ValidateIf((o) => o.type === MailTypeEnum.MOVIE_AVAILABLE)
   @IsString()
