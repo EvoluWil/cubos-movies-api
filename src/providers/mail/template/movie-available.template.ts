@@ -31,6 +31,11 @@ export function movieAvailableTemplate(
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           }
 
+          a {
+            text-decoration: none;
+            color: #ffffff;
+          }
+
           h1 {
             color: #8E4EC6;
             text-align: center;

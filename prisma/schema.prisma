@@ -62,7 +62,7 @@ model Genre {
 
 model Language {
   id   String @id @default(uuid())
-  name String
+  name String @unique
 
   movies Movie[] @relation("movie_languages")
 

@@ -19,6 +19,11 @@ export function newAccountTemplate(username: string): string {
             line-height: 1.6;
           }
 
+          a {
+            text-decoration: none;
+            color: #ffffff;
+          }
+
           .container {
             max-width: 600px;
             margin: 20px auto;
