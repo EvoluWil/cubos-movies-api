@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { differenceInMinutes } from 'date-fns';
 import { User } from 'src/@types/user.type';
 import { FindUserDto } from 'src/providers/auth/dto/find-user.dto';
-import { defaultPlainToClass } from 'src/utils/default-plain-to-class';
+import { defaultPlainToClass } from 'src/utils/default-plain-to-class.util';
 import { generateCode } from 'src/utils/generate-code.util';
 import { generateHash } from 'src/utils/generate-hash.util';
 import { MailTypeEnum } from '../mail/dto/send-mail.dto';

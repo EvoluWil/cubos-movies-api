@@ -45,11 +45,8 @@ model Movie {
   createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
 
-  genreId String
-  genre   Genre  @relation(fields: [genreId], references: [id])
-
-  languageId String
-  language   Language @relation(fields: [languageId], references: [id])
+  genres    Genre[]    @relation("movie_genres")
+  languages Language[] @relation("movie_languages")
 
   @@map("movies")
 }
@@ -58,7 +55,7 @@ model Genre {
   id   String @id @default(uuid())
   name String @unique
 
-  movies Movie[]
+  movies Movie[] @relation("movie_genres")
 
   @@map("genres")
 }
@@ -67,7 +64,7 @@ model Language {
   id   String @id @default(uuid())
   name String
 
-  movies Movie[]
+  movies Movie[] @relation("movie_languages")
 
   @@map("languages")
 }
