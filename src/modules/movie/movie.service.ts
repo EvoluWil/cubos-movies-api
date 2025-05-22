@@ -15,7 +15,7 @@ export class MovieService {
   ) {}
 
   async create(createMovieDto: CreateMovieDto, userId: string) {
-    const { genreIds, languageIds, coverBase64, videoYouTubeId, ...rest } =
+    const { genreIds, languageId, coverBase64, videoYouTubeId, ...rest } =
       createMovieDto;
 
     const videoUrl = getYouTubeUrl(videoYouTubeId);
@@ -30,8 +30,8 @@ export class MovieService {
         genres: {
           connect: genreIds.map((id) => ({ id })),
         },
-        languages: {
-          connect: languageIds.map((id) => ({ id })),
+        language: {
+          connect: { id: languageId },
         },
         createdBy: {
           connect: { id: userId },
@@ -49,7 +49,7 @@ export class MovieService {
       select: {
         id: true,
         title: true,
-        rating: true,
+        quality: true,
         coverUrl: true,
         genres: true,
       },
@@ -69,7 +69,7 @@ export class MovieService {
       where: { id },
       include: {
         genres: true,
-        languages: true,
+        language: true,
       },
     });
   }

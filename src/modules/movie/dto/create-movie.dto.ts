@@ -14,7 +14,15 @@ export class CreateMovieDto {
 
   @IsString()
   @IsNotEmpty()
+  originalTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
   description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  synopsis: string;
 
   @IsString()
   @IsNotEmpty()
@@ -34,7 +42,11 @@ export class CreateMovieDto {
 
   @IsNumber()
   @IsNotEmpty()
-  rating: number;
+  duration: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  quality: number;
 
   @IsNumber()
   @IsNotEmpty()
@@ -52,7 +64,7 @@ export class CreateMovieDto {
   @IsUUID(4, { each: true })
   genreIds: string[];
 
-  @IsArray()
-  @IsUUID(4, { each: true })
-  languageIds: string[];
+  @IsString()
+  @IsUUID(4)
+  languageId: string;
 }

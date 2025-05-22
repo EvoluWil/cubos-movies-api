@@ -27,16 +27,19 @@ model User {
 }
 
 model Movie {
-  id          String @id @default(uuid())
-  title       String
-  description String
-  coverUrl    String
-  videoUrl    String
-  popularity  Int
-  votes       Int
-  rating      Int
-  budget      Int
-  revenue     Int
+  id            String @id @default(uuid())
+  title         String
+  originalTitle String
+  description   String
+  synopsis      String
+  coverUrl      String
+  videoUrl      String
+  duration      Int
+  popularity    Int
+  votes         Int
+  quality       Int
+  budget        Int
+  revenue       Int
 
   releaseAt DateTime
   createdAt DateTime @default(now())
@@ -45,8 +48,10 @@ model Movie {
   createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
 
-  genres    Genre[]    @relation("movie_genres")
-  languages Language[] @relation("movie_languages")
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  languageId String
+
+  genres Genre[]
 
   @@map("movies")
 }
@@ -55,7 +60,7 @@ model Genre {
   id   String @id @default(uuid())
   name String @unique
 
-  movies Movie[] @relation("movie_genres")
+  movies Movie[]
 
   @@map("genres")
 }
@@ -64,7 +69,7 @@ model Language {
   id   String @id @default(uuid())
   name String @unique
 
-  movies Movie[] @relation("movie_languages")
+  movies Movie[]
 
   @@map("languages")
 }
