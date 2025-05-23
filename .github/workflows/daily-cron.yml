@@ -2,13 +2,23 @@ name: Daily Cron Trigger
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '0 12 * * *' 
   workflow_dispatch:
 
 jobs:
   call-api:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Nest.js Endpoint
+      - name: Trigger Nest.js Daily Task
         run: |
-          curl -X GET "https://temp/api/v1/cron/daily-task"
+          echo "Disparando cron diário para filmes estreando hoje..."
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.json "https://your-domain.com/api/v1/webhooks/daily-task")
+          HTTP_CODE=$(tail -c 3 <<< "$RESPONSE")
+
+          echo "Resposta HTTP: $HTTP_CODE"
+          cat response.json
+
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "Erro: Requisição falhou com status $HTTP_CODE"
+            exit 1
+          fi
