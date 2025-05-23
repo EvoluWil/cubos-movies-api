@@ -37,6 +37,9 @@ describe('UploadService', () => {
 
   it('should upload a valid base64 image and return the URL', async () => {
     const base64 = 'data:image/png;base64,aGVsbG8=';
+    process.env.STORAGE_PUBLIC_URL =
+      'https://bucket.account.r2.cloudflarestorage.com';
+
     const url = await service.uploadBase64Image(base64);
     expect(sendMock).toHaveBeenCalledWith(expect.any(PutObjectCommand));
     expect(url).toBe(
@@ -53,7 +56,7 @@ describe('UploadService', () => {
   it('should throw if not an image', async () => {
     const base64 = 'data:application/pdf;base64,aGVsbG8=';
     await expect(service.uploadBase64Image(base64)).rejects.toThrow(
-      'Apenas imagens são permitidas',
+      'Formato de imagem inválido',
     );
   });
 });

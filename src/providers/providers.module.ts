@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from './jwt/jwt.modules';
 import { MailModule } from './mail/mail.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaModule } from './prisma/prisma.module';
     MailModule,
     JwtModule,
     AuthModule,
+    WebhookModule,
   ],
   providers: [],
   exports: [],

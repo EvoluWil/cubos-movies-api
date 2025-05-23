@@ -1,4 +1,5 @@
 import {
+  ArrayNotEmpty,
   IsArray,
   IsDateString,
   IsNotEmpty,
@@ -6,6 +7,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { IsYouTubeId } from 'src/decorators/you-tube-id.decorator';
 
 export class CreateMovieDto {
   @IsString()
@@ -29,6 +31,7 @@ export class CreateMovieDto {
   coverBase64: string;
 
   @IsString()
+  @IsYouTubeId()
   @IsNotEmpty()
   videoYouTubeId: string;
 
@@ -61,6 +64,7 @@ export class CreateMovieDto {
   releaseAt: string;
 
   @IsArray()
+  @ArrayNotEmpty()
   @IsUUID(4, { each: true })
   genreIds: string[];
 

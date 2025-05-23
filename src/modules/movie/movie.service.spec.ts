@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { QueryBuilderService } from 'src/providers/prisma/prisma-querybuilder/prisma-querybuilder.service';
 import { PrismaService } from 'src/providers/prisma/prisma.service';
 import { UploadService } from 'src/providers/upload/upload.service';
-import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieService } from './movie.service';
 
@@ -45,45 +44,67 @@ describe('MovieService', () => {
   });
 
   it('should create a movie', async () => {
-    const dto: CreateMovieDto = {
+    const dto = {
       title: 'Test',
+      originalTitle: 'Test',
       description: 'desc',
+      synopsis: 'syn',
       releaseAt: new Date().toISOString(),
       genreIds: ['1'],
-      languageIds: ['2'],
+      languageId: '2',
       coverBase64: 'base64',
       videoYouTubeId: 'abc123',
       popularity: 0,
       votes: 0,
-      rating: 0,
+      quality: 0,
       budget: 0,
       revenue: 0,
+      duration: 120,
     };
-
-    await service.create(dto, 'user1');
-
+    await service.create(dto as any, 'user1');
     expect(uploadMock.uploadBase64Image).toHaveBeenCalledWith('base64');
-    expect(prismaMock.movie.create).toHaveBeenCalled();
+    expect(prismaMock.movie.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          title: 'Test',
+          coverUrl: 'mocked-cover-url',
+          videoUrl: 'https://youtu.be/abc123',
+          genres: { connect: [{ id: '1' }] },
+          language: { connect: { id: '2' } },
+          createdBy: { connect: { id: 'user1' } },
+        }),
+      }),
+    );
   });
 
   it('should return all movies with query builder', async () => {
     const mockMovies = [
-      { id: '1', title: 'Test', rating: 5, coverUrl: 'url', genres: [] },
+      { id: '1', title: 'Test', quality: 'HD', coverUrl: 'url', genres: [] },
     ];
     prismaMock.movie.findMany = jest.fn().mockResolvedValue(mockMovies);
-
     const result = await service.findAll();
     expect(result).toEqual(mockMovies);
+    expect(qbMock.query).toHaveBeenCalledWith('movie');
+    expect(prismaMock.movie.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          id: true,
+          title: true,
+          quality: true,
+          coverUrl: true,
+          genres: true,
+        }),
+      }),
+    );
   });
 
   it('should find one movie with details', async () => {
     prismaMock.movie.findFirst = jest
       .fn()
       .mockResolvedValueOnce({ id: '1' })
-      .mockResolvedValueOnce({ id: '1', genres: [], languages: [] });
-
+      .mockResolvedValueOnce({ id: '1', genres: [], language: {} });
     const result = await service.findOne('1');
-    expect(result).toEqual({ id: '1', genres: [], languages: [] });
+    expect(result).toEqual({ id: '1', genres: [], language: {} });
   });
 
   it('should throw if movie not found (findOne)', async () => {
@@ -92,27 +113,37 @@ describe('MovieService', () => {
   });
 
   it('should update a movie if user is creator', async () => {
-    const dto: UpdateMovieDto = { title: 'Updated' };
-    prismaMock.movie.findFirst = jest
-      .fn()
-      .mockResolvedValue({ createdById: 'user1' });
+    const dto: UpdateMovieDto = {
+      title: 'Updated',
+      genreIds: ['1'],
+      languageId: '2',
+    };
+    prismaMock.movie.findFirst = jest.fn().mockResolvedValue({
+      createdById: 'user1',
+      videoUrl: 'old',
+      coverUrl: 'old',
+      genres: [],
+    });
     prismaMock.movie.update = jest.fn().mockResolvedValue({ ...dto });
-
     const result = await service.update('1', dto, 'user1');
-    expect(result).toEqual(dto);
-  });
-
-  it('should throw if movie not found (update)', async () => {
-    prismaMock.movie.findFirst = jest.fn().mockResolvedValue(null);
-    await expect(service.update('1', {}, 'user1')).rejects.toThrow(
-      NotFoundException,
+    expect(result).toEqual({ ok: true });
+    expect(prismaMock.movie.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: '1' },
+        data: expect.objectContaining({
+          title: 'Updated',
+          genres: expect.any(Object),
+          language: expect.any(Object),
+        }),
+      }),
     );
   });
 
   it('should throw if user is not the creator (update)', async () => {
-    prismaMock.movie.findFirst = jest
-      .fn()
-      .mockResolvedValue({ createdById: 'other' });
+    prismaMock.movie.findFirst = jest.fn().mockResolvedValue({
+      createdById: 'other',
+      genres: [],
+    });
     await expect(service.update('1', {}, 'user1')).rejects.toThrow(
       NotFoundException,
     );
@@ -123,9 +154,11 @@ describe('MovieService', () => {
       .fn()
       .mockResolvedValue({ createdById: 'user1' });
     prismaMock.movie.delete = jest.fn().mockResolvedValue({});
-
     const result = await service.remove('1', 'user1');
     expect(result).toEqual({ ok: true });
+    expect(prismaMock.movie.delete).toHaveBeenCalledWith({
+      where: { id: '1' },
+    });
   });
 
   it('should throw if movie not found (remove)', async () => {

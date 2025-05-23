@@ -22,6 +22,10 @@ export class MovieService {
 
     const coverUrl = await this.upload.uploadBase64Image(coverBase64);
 
+    if (!coverUrl) {
+      throw new NotFoundException('Erro ao fazer upload da imagem');
+    }
+
     await this.prisma.movie.create({
       data: {
         ...rest,
@@ -79,6 +83,9 @@ export class MovieService {
       where: { id },
       select: {
         createdById: true,
+        videoUrl: true,
+        coverUrl: true,
+        genres: true,
       },
     });
 
@@ -92,10 +99,48 @@ export class MovieService {
       );
     }
 
-    return this.prisma.movie.update({
+    const { genreIds, languageId, coverBase64, videoYouTubeId, ...rest } =
+      updateMovieDto;
+
+    const videoUrl = videoYouTubeId
+      ? getYouTubeUrl(videoYouTubeId)
+      : movie.videoUrl;
+
+    const coverUrl = coverBase64
+      ? await this.upload.uploadBase64Image(coverBase64)
+      : movie.coverUrl;
+
+    if (!coverUrl) {
+      throw new NotFoundException('Erro ao fazer upload da imagem');
+    }
+
+    const genreIdsToConnect = genreIds?.length
+      ? genreIds?.filter((id) => !movie.genres.some((genre) => genre.id === id))
+      : [];
+
+    const genreIdsToDisconnect = genreIds?.length
+      ? movie.genres.filter((genre) => !genreIds?.includes(genre.id))
+      : [];
+
+    await this.prisma.movie.update({
       where: { id },
-      data: updateMovieDto,
+      data: {
+        ...rest,
+        coverUrl,
+        videoUrl,
+        genres: {
+          connect: genreIdsToConnect.map((id) => ({ id })),
+          disconnect: genreIdsToDisconnect.map((genre) => ({ id: genre.id })),
+        },
+        language: languageId
+          ? {
+              connect: { id: languageId },
+            }
+          : undefined,
+      },
     });
+
+    return { ok: true };
   }
 
   async remove(id: string, userId: string) {

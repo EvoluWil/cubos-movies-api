@@ -1,5 +1,5 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -20,13 +20,13 @@ export class UploadService {
     const matches = base64.match(/^data:(.+);base64,(.+)$/);
 
     if (!matches || matches.length !== 3) {
-      throw new Error('Formato base64 inválido');
+      throw new BadRequestException('Formato base64 inválido');
     }
 
     const mimeType = matches[1];
 
     if (!mimeType.startsWith('image/')) {
-      throw new Error('Apenas imagens são permitidas');
+      throw new BadRequestException('Formato de imagem inválido');
     }
     const buffer = Buffer.from(matches[2], 'base64');
     const fileExtension = mimeType.split('/')[1];
@@ -42,6 +42,6 @@ export class UploadService {
 
     await this.r2Client.send(command);
 
-    return `https://${process.env.STORAGE_BUCKET}.${process.env.STORAGE_ACCOUNT_ID}.r2.cloudflarestorage.com/${filename}`;
+    return `${process.env.STORAGE_PUBLIC_URL}/${filename}`;
   }
 }
