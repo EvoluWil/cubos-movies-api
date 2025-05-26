@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryBuilderService } from 'src/providers/prisma/prisma-querybuilder/prisma-querybuilder.service';
 import { PrismaService } from 'src/providers/prisma/prisma.service';
 import { UploadService } from 'src/providers/upload/upload.service';
-import { getYouTubeUrl } from 'src/utils/get-you-tube-url.util';
+import { getYouTubeUrl } from 'src/utils/get-youtube-url.util';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 
