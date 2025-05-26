@@ -2,7 +2,7 @@ name: Daily Cron Trigger
 
 on:
   schedule:
-    - cron: '0 12 * * *' 
+    - cron: '0 0 * * *' 
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
       - name: Trigger Nest.js Daily Task
         run: |
           echo "Disparando cron diário para filmes estreando hoje..."
-          RESPONSE=$(curl -s -w "%{http_code}" -o response.json "https://your-domain.com/api/v1/webhooks/daily-task")
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.json "https://cubos-movies-api.vercel.app/api/v1/webhooks/daily-task")
           HTTP_CODE=$(tail -c 3 <<< "$RESPONSE")
 
           echo "Resposta HTTP: $HTTP_CODE"
