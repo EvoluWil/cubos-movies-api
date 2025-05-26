@@ -6,7 +6,7 @@ import { UploadService } from 'src/providers/upload/upload.service';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieService } from './movie.service';
 
-jest.mock('src/utils/get-you-tube-url.util', () => ({
+jest.mock('src/utils/get-youtube-url.util', () => ({
   getYouTubeUrl: jest.fn().mockImplementation((id) => `https://youtu.be/${id}`),
 }));
 
@@ -47,16 +47,17 @@ describe('MovieService', () => {
     const dto = {
       title: 'Test',
       originalTitle: 'Test',
-      description: 'desc',
+      promotionalText: 'desc',
       synopsis: 'syn',
       releaseAt: new Date().toISOString(),
       genreIds: ['1'],
       languageId: '2',
       coverBase64: 'base64',
       videoYouTubeId: 'abc123',
+      backdropBase64: 'backdrop-base64',
       popularity: 0,
       votes: 0,
-      quality: 0,
+      rating: 0,
       budget: 0,
       revenue: 0,
       duration: 120,
@@ -79,18 +80,18 @@ describe('MovieService', () => {
 
   it('should return all movies with query builder', async () => {
     const mockMovies = [
-      { id: '1', title: 'Test', quality: 'HD', coverUrl: 'url', genres: [] },
+      { id: '1', title: 'Test', rating: 48, coverUrl: 'url', genres: [] },
     ];
     prismaMock.movie.findMany = jest.fn().mockResolvedValue(mockMovies);
     const result = await service.findAll();
-    expect(result).toEqual(mockMovies);
+    expect(result).toEqual({ movies: mockMovies, total: undefined });
     expect(qbMock.query).toHaveBeenCalledWith('movie');
     expect(prismaMock.movie.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         select: expect.objectContaining({
           id: true,
           title: true,
-          quality: true,
+          rating: true,
           coverUrl: true,
           genres: true,
         }),
@@ -117,6 +118,7 @@ describe('MovieService', () => {
       title: 'Updated',
       genreIds: ['1'],
       languageId: '2',
+      backdropBase64: 'backdrop-base64', // ensure backdrop is present
     };
     prismaMock.movie.findFirst = jest.fn().mockResolvedValue({
       createdById: 'user1',
@@ -124,6 +126,9 @@ describe('MovieService', () => {
       coverUrl: 'old',
       genres: [],
     });
+    uploadMock.uploadBase64Image = jest
+      .fn()
+      .mockResolvedValue('mocked-backdrop-url'); // ensure backdrop upload is mocked
     prismaMock.movie.update = jest.fn().mockResolvedValue({ ...dto });
     const result = await service.update('1', dto, 'user1');
     expect(result).toEqual({ ok: true });

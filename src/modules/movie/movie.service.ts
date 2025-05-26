@@ -59,8 +59,7 @@ export class MovieService {
   }
 
   async findAll() {
-    const query = await this.qb.query('movie');
-    console.log('query', query);
+    const { query, count } = await this.qb.query('movie');
     const movies = await this.prisma.movie.findMany({
       ...query,
       select: {
@@ -72,15 +71,9 @@ export class MovieService {
       },
     });
 
-    const total = await this.prisma.movie.count({
-      where: {
-        ...query.where,
-      },
-    });
-
     return {
       movies,
-      total,
+      total: count,
     };
   }
 

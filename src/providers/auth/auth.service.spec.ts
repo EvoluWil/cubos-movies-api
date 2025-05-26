@@ -24,6 +24,10 @@ describe('AuthService', () => {
   let jwt: JwtService;
   let mail: MailService;
 
+  beforeAll(() => {
+    process.env.CRYPTO_SECRET = 'test_secret';
+  });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
