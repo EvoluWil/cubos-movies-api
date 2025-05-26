@@ -15,8 +15,14 @@ export class MovieService {
   ) {}
 
   async create(createMovieDto: CreateMovieDto, userId: string) {
-    const { genreIds, languageId, coverBase64, videoYouTubeId, ...rest } =
-      createMovieDto;
+    const {
+      genreIds,
+      languageId,
+      coverBase64,
+      videoYouTubeId,
+      backdropBase64,
+      ...rest
+    } = createMovieDto;
 
     const videoUrl = getYouTubeUrl(videoYouTubeId);
 
@@ -26,11 +32,17 @@ export class MovieService {
       throw new NotFoundException('Erro ao fazer upload da imagem');
     }
 
+    const backdropUrl = await this.upload.uploadBase64Image(backdropBase64);
+    if (!backdropUrl) {
+      throw new NotFoundException('Erro ao fazer upload do backdrop');
+    }
+
     await this.prisma.movie.create({
       data: {
         ...rest,
         coverUrl,
         videoUrl,
+        backdropUrl,
         genres: {
           connect: genreIds.map((id) => ({ id })),
         },
@@ -48,16 +60,28 @@ export class MovieService {
 
   async findAll() {
     const query = await this.qb.query('movie');
-    return this.prisma.movie.findMany({
+    console.log('query', query);
+    const movies = await this.prisma.movie.findMany({
       ...query,
       select: {
         id: true,
         title: true,
-        quality: true,
+        rating: true,
         coverUrl: true,
         genres: true,
       },
     });
+
+    const total = await this.prisma.movie.count({
+      where: {
+        ...query.where,
+      },
+    });
+
+    return {
+      movies,
+      total,
+    };
   }
 
   async findOne(id: string) {
@@ -85,6 +109,7 @@ export class MovieService {
         createdById: true,
         videoUrl: true,
         coverUrl: true,
+        backdropUrl: true,
         genres: true,
       },
     });
@@ -99,8 +124,14 @@ export class MovieService {
       );
     }
 
-    const { genreIds, languageId, coverBase64, videoYouTubeId, ...rest } =
-      updateMovieDto;
+    const {
+      genreIds,
+      languageId,
+      coverBase64,
+      videoYouTubeId,
+      backdropBase64,
+      ...rest
+    } = updateMovieDto;
 
     const videoUrl = videoYouTubeId
       ? getYouTubeUrl(videoYouTubeId)
@@ -112,6 +143,14 @@ export class MovieService {
 
     if (!coverUrl) {
       throw new NotFoundException('Erro ao fazer upload da imagem');
+    }
+
+    const backdropUrl = backdropBase64
+      ? await this.upload.uploadBase64Image(backdropBase64)
+      : movie.backdropUrl;
+
+    if (!backdropUrl) {
+      throw new NotFoundException('Erro ao fazer upload do backdrop');
     }
 
     const genreIdsToConnect = genreIds?.length

@@ -20,15 +20,17 @@ export class CreateMovieDto {
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  promotionalText: string;
 
   @IsString()
   @IsNotEmpty()
   synopsis: string;
 
   @IsString()
-  @IsNotEmpty()
   coverBase64: string;
+
+  @IsString()
+  backdropBase64: string;
 
   @IsString()
   @IsYouTubeId()
@@ -49,7 +51,7 @@ export class CreateMovieDto {
 
   @IsNumber()
   @IsNotEmpty()
-  quality: number;
+  rating: number;
 
   @IsNumber()
   @IsNotEmpty()

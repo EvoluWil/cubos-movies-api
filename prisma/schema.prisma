@@ -27,19 +27,20 @@ model User {
 }
 
 model Movie {
-  id            String @id @default(uuid())
-  title         String
-  originalTitle String
-  description   String
-  synopsis      String
-  coverUrl      String
-  videoUrl      String
-  duration      Int
-  popularity    Int
-  votes         Int
-  quality       Int
-  budget        Int
-  revenue       Int
+  id              String @id @default(uuid())
+  title           String
+  originalTitle   String
+  promotionalText String
+  synopsis        String
+  coverUrl        String
+  backdropUrl     String
+  videoUrl        String
+  duration        Int
+  popularity      Int
+  votes           Int
+  rating          Int
+  budget          Int
+  revenue         Int
 
   releaseAt DateTime
   createdAt DateTime @default(now())

@@ -4,14 +4,15 @@ export class MovieEntity implements Movie {
   id: string;
   title: string;
   originalTitle: string;
-  description: string;
+  promotionalText: string;
   synopsis: string;
   coverUrl: string;
+  backdropUrl: string;
   videoUrl: string;
   duration: number;
   popularity: number;
   votes: number;
-  quality: number;
+  rating: number;
   budget: number;
   revenue: number;
   releaseAt: Date;
