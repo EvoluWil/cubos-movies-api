@@ -1,8 +1,13 @@
 # compiled output
-/dist
 /node_modules
 /build
 /generated
+
+# dist
+dist/*
+!dist/src
+dist/src/*
+!dist/src/main*
 
 # Logs
 logs
