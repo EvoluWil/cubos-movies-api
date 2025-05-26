@@ -34,4 +34,9 @@ export class SendMailDto {
   @IsString()
   @IsNotEmpty()
   movieTitle?: string;
+
+  @ValidateIf((o) => o.type === MailTypeEnum.FORGOT_PASSWORD)
+  @IsString()
+  @IsNotEmpty()
+  email?: string;
 }

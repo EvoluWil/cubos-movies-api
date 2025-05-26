@@ -1,9 +1,11 @@
 export function recoveryPasswordTemplate(
   username: string,
-  token: string,
+  code: string,
+  email: string,
 ): string {
   const url = process.env.CLIENT_URL;
   const logoUrl = process.env.LOGO_URL;
+  const recoveryUrl = `${process.env.CLIENT_URL}/auth/code-validation/${email}`;
 
   return `
     <!DOCTYPE html>
@@ -31,6 +33,11 @@ export function recoveryPasswordTemplate(
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           }
 
+          a {
+            text-decoration: none;
+            color: #ffffff;
+          }
+
           h1 {
             color: #8E4EC6;
             text-align: center;
@@ -38,6 +45,18 @@ export function recoveryPasswordTemplate(
 
           p {
             margin: 20px 0;
+            text-align: center;
+          }
+
+          .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #fff;
+            background: #8E4EC6;
+            text-decoration: none;
+            border-radius: 8px;
             text-align: center;
           }
 
@@ -75,7 +94,10 @@ export function recoveryPasswordTemplate(
           <h1>Recuperação de Senha</h1>
           <p>Olá, ${username}!</p>
           <p>Recebemos uma solicitação para redefinir sua senha. Utilize o código abaixo para prosseguir com a recuperação:</p>
-          <p class="code">${token}</p>
+          <p class="code">${code}</p>
+
+          <p>Para redefinir sua senha, clique no botão abaixo:</p>
+          <p style="color: #FFFFFF;"><a href="${recoveryUrl}" class="btn">Recuperar Minha Conta</a></p>
           <p>Se você não solicitou a recuperação de senha, ignore este e-mail. Este código é válido por tempo limitado.</p>
           <div class="footer">
             © 2024 WRS Tecnologia. Todos os direitos reservados.

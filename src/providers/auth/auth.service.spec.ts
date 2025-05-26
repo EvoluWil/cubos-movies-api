@@ -146,10 +146,10 @@ describe('AuthService', () => {
     expect(result.token).toBeDefined();
   });
 
-  it('should recover password with valid token', async () => {
+  it('should reset password with valid token', async () => {
     jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(mockUser as any);
     jest.spyOn(prisma.user, 'update').mockResolvedValue({} as any);
-    const result = await service.recoveryPassword('reset-token', {
+    const result = await service.resetPassword('reset-token', {
       password: 'newpass',
       passwordConfirmation: 'newpass',
     });

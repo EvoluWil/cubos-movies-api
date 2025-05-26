@@ -54,12 +54,12 @@ export class AuthController {
   }
 
   @IsPublic()
-  @Post('recovery-password/:token')
-  recoveryPassword(
+  @Post('reset-password/:token')
+  resetPassword(
     @Param('token') token: string,
     @Body() credentialDto: CredentialDto,
   ) {
-    return this.authService.recoveryPassword(token, credentialDto);
+    return this.authService.resetPassword(token, credentialDto);
   }
 
   @IsPublic()

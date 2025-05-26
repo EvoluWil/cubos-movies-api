@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { differenceInMinutes } from 'date-fns';
 import { User } from 'src/@types/user.type';
 import { FindUserDto } from 'src/providers/auth/dto/find-user.dto';
+import { decrypt } from 'src/utils/crypto.util';
 import { defaultPlainToClass } from 'src/utils/default-plain-to-class.util';
 import { generateCode } from 'src/utils/generate-code.util';
 import { generateHash } from 'src/utils/generate-hash.util';
@@ -138,7 +139,8 @@ export class AuthService {
     return { ok: true };
   }
 
-  async forgotPassword({ email }: ForgotPasswordDto) {
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const email = decrypt(forgotPasswordDto.email);
     const user = await this.prisma.user.findFirst({
       where: { email },
     });
@@ -152,6 +154,7 @@ export class AuthService {
     const emailData = {
       username: user.name?.split(' ')[0],
       code,
+      email: forgotPasswordDto.email,
     };
 
     const result = await this.mail.sendMail({
@@ -178,7 +181,7 @@ export class AuthService {
 
   async validateCode(code: string, { email }: ForgotPasswordDto) {
     const user = await this.prisma.user.findFirst({
-      where: { codeVerification: code, email },
+      where: { codeVerification: code, email: decrypt(email) },
     });
 
     if (!user || !user.codeCreatedAt) {
@@ -208,7 +211,7 @@ export class AuthService {
     return { token };
   }
 
-  async recoveryPassword(token: string, { password }: CredentialDto) {
+  async resetPassword(token: string, { password }: CredentialDto) {
     const user = await this.prisma.user.findFirst({
       where: {
         updatePasswordToken: token,
